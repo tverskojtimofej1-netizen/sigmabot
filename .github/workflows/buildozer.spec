@@ -1,18 +1,42 @@
-[app]
-title = SigmaBot
-package.name = sigmabot
-package.domain = org.test
-source.dir = .
-source.exts = py,png,jpg,kv,atlas
-version = 0.1
-requirements = python3,kivy
-orientation = portrait
-fullscreen = 0
+name: Build APK
 
-android.api = 31
-android.min_api = 21
-android.sdk = 31
-android.ndk = 25b
-android.build_tools_version = 31.0.0
-android.accept_sdk_license = True
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
 
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libreadline-dev libsqlite3-dev libgdbm-dev libdb5.3-dev libbz2-dev libexpat1-dev liblldb-dev libffi-dev libssl-dev
+          pip install --upgrade pip
+          pip install buildozer cython kivy
+
+      - name: Accept Android Licenses
+        run: |
+          mkdir -p ~/.android
+          touch ~/.android/repositories.cfg
+          yes | buildozer android accept_sdk_license || true
+
+      - name: Build with Buildozer
+        run: |
+          buildozer -v android debug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: bin/*.apk
+          
