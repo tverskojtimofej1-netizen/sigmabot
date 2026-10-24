@@ -1,0 +1,2 @@
+# sigmabot
+Sigma Troll Bot.
