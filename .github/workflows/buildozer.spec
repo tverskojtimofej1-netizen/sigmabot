@@ -9,9 +9,10 @@ requirements = python3,kivy
 orientation = portrait
 fullscreen = 0
 
-# Указываем стабильные версии SDK, чтобы Buildozer не ругался на aidl и build-tools:
 android.api = 31
 android.min_api = 21
 android.sdk = 31
 android.ndk = 25b
+android.build_tools_version = 31.0.0
 android.accept_sdk_license = True
+
